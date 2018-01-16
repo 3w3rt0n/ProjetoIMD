@@ -5,7 +5,7 @@
  *      Author: Ewerton L. de Sousa
  */
 
-/* Projeto de automaÁ„o de sala de aula
+/* Projeto de automa√ß√£o de sala de aula
 
 
 */
@@ -124,7 +124,7 @@ void display_OLED_u8g2(void *pvParameter){
 	vTaskDelay( 500 / portTICK_RATE_MS );
 	u8g2_ClearBuffer(&u8g2);
 	u8g2_SendBuffer(&u8g2);
-	//ConfiguraÁ„o da fila
+	//Configura√ß√£o da fila
 	BaseType_t xStatus;
 	const TickType_t xTicksToWait = pdMS_TO_TICKS(100);
 	TEXTO texto;
@@ -156,7 +156,7 @@ void ler_Touch_PAD(void *pvParameter){
 
 	//LED Pino 16
 
-	//ConfiguraÁ„o da Áeitura da fila
+	//Configura√ß√£o da √ßeitura da fila
 	BaseType_t xStatus;
 	const TickType_t xTicksToWait = pdMS_TO_TICKS(100);
 	TEXTO texto;
@@ -234,7 +234,7 @@ void ler_ADC(void *pvParameter){
 
 
 /*
- * @brief Tarefa respons·vel pela leitura da temperatura e umidade do ar, no sensor DHT22
+ * @brief Tarefa respons√°vel pela leitura da temperatura e umidade do ar, no sensor DHT22
  *
  *  	 __________
  *      |          |	VCC: 3.3 ~ 6V
@@ -423,6 +423,20 @@ void app_main()
 	//Fila para enviar texto para o display
 	//xQueue = xQueueCreate(10, sizeof(TEXTO));
 
+	//Novo - 16-01-2018
+	//**************************************
+	// NVS - Necessario para o DHT22 e Wifi
+	//**************************************
+	// Initialize NVS.
+	esp_err_t err = nvs_flash_init();
+	if (err == ESP_ERR_NVS_NO_FREE_PAGES) {
+	    ESP_ERROR_CHECK(nvs_flash_erase());
+	    err = nvs_flash_init();
+	}
+	ESP_ERROR_CHECK( err );
+	//######################################
+	// Fim NVS
+	//######################################
 
 	//*****************************
 	// RMT
@@ -455,7 +469,6 @@ void app_main()
 	//*****************************
 	// DHT22
 	//*****************************
-	///nvs_flash_init();
 	///vTaskDelay( 1000 / portTICK_RATE_MS );
 	///xTaskCreate( DHT_task, "DHT_task", 2048, NULL, 5, NULL );
 	//#############################
@@ -472,13 +485,22 @@ void app_main()
 
 	//*****************************
 	//Ler Touch Pad
-	// Incompatibilidade com a biblioteca u8g2 - 28/11, verificar novas versıes no futuro
+	// Incompatibilidade com a biblioteca u8g2 - 28/11, verificar novas vers√µes no futuro
 	//*****************************
 	//xTaskCreate( ler_Touch_PAD, "ler_Touch_PAD", 2048, NULL, 2, NULL );
 	//xTaskCreatePinnedToCore(&display_OLED_u8g2, "u8g2", 2048, NULL, 6, NULL, 1);
 	//#############################
 	//Fim Touch Pad
 	//#############################
+	
+	// Novo 16-01-2018
+	//*****************************
+	// WiFi
+	//*****************************
+	initialise_wifi();
+	//##############################
+	// Fim
+	//##############################
 
 
 }
